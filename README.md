@@ -37,16 +37,67 @@ npm install -g typescript
 
 # 開発Tips
 ## 流れ
-- まずHTMLだけでデザインする
-- ボタンに関数を設定する(最初はalertで発火だけ確認してから処理を実装する)
+- まずHTMLでデザインする(マークアップ)
+- CSSを当てる
+- Reactマークアップ（変動する要素はStateを使ってマークアップしておく）
+- 大きくなってきたらcomponent分割する
+- componentにpropsで変数と関数を渡すようにリファクタする
+- stypeもcomponent別にリファクタする
 
 
-## 実装
-- ボタンに対するイベントを呼び出す方法
-```
-document.getElementById("HTMLタグに指定したid").addEventListener("リッスンするイベント（clickなど）", 受信した時に実行するFunction名);
-```
+## propsとstate
+- Props
+  - 親コンポーネント - 子コンポーネント間の変数や関数の受け渡しに利用するオブジェクト
+  - 親側
+    ```
+    <ColorMessage color="blue">元気です</ColorMessage>
+    ```
+  - 小側
+    ```
+    export const ColorMessage = (props) => {
+      const { color, children } = props; //propsの分割代入
+      const style = {
+        color, //オブジェクト省略記法
+        fontSize: "18px",
+      };
 
+      return <p stype={style}>{children}</p>;
+    };
+    ```
+
+- State
+  - コンポーネント内に閉じたコンポーネントの状態を持つデータ
+    - 例：ドロップダウンの開いている状態、ログインユーザ名などの外部データ
+  - 仮想DOMとの差分をとり、実際のDOMを更新し、コンポーネントを再描画するための基本的な方法
+  - `useState()`関数の戻り値（Stateの実際の値と、Stateを更新するための関数）を配列の分割代入で受け取る
+    ```
+    const [var, setVar] = useState(0);
+    ```
+  - 例：以下の関数を使うことで、`var`をインクメントできる
+    ```
+    const setNumber = () => {
+      setVar( var + 1);
+    }
+    ```
+  - State更新関数は、特定の関数の中で複数定義されている場合、まとめて一括で評価される
+
+  - ボタンのOn/Offで顔文字の表示を切り替えるコード
+    ```
+    export const App = () => {
+      const [isShowFace, setIsShowFace] = useState(true);
+      const onClickToggle = () => {
+        setIsShowFace(!isShowFace);
+      };
+
+      return (
+        <>
+          <button onClick={onClickToggle}>on/off</button>
+          {isShowFace && <p>(*´ω｀)</p>}
+        </>
+      );
+    }
+    ```
 
 ## デバッグ
  - console.log(変数)で出力
+ - alert()で発火
